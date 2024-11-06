@@ -108,34 +108,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,0,0);
         toggle.setDrawerIndicatorEnabled(false);
         toggle.syncState();
-
-        Log.d("debug","init: aaaaaaaaaaa"+SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"username")+SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"userId"));
+        
         //设置侧滑用户信息
-        try{
-            avatarUrl=BaseUrl+"/fdb1.0.0/user/download/avatar/id/"+SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"userId");
-            Glide.with(MainActivity.this).load(avatarUrl).diskCacheStrategy(DiskCacheStrategy.NONE).into(slideAvatar);
-            slideUsername.setText(SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"username"));
-        }catch(Exception e){
-        }
-
+        avatarUrl="http://img.k2r2.com/uploads/frombd/0/253/1067010798/3534588478.jpg!820pic";
+        Glide.with(MainActivity.this).load(avatarUrl).diskCacheStrategy(DiskCacheStrategy.NONE).into(slideAvatar);
+        slideUsername.setText(SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"username"));
         //设置菜单栏按键
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                drawerLayout.openDrawer(GravityCompat.START);
-                //设置侧滑用户信息
-                try{
-                    avatarUrl=BaseUrl+"/fdb1.0.0/user/download/avatar/id/"+SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"userId");
-                    Glide.with(MainActivity.this).load(avatarUrl).diskCacheStrategy(DiskCacheStrategy.NONE).into(slideAvatar);
-                    slideUsername.setText(SharedPreferencesUtil.getStoredMessage(MyApplication.getContext(),"username"));
-                }catch(Exception e){
-                }
-
-            }
-        });
+       toolbar.setNavigationOnClickListener(view -> drawerLayout.openDrawer(GravityCompat.START));
 
         //设置监听事件
         userInfo.setOnClickListener(new View.OnClickListener(){
