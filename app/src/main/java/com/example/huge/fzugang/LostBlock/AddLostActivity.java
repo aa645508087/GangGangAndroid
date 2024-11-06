@@ -31,7 +31,9 @@ import com.zyao89.view.zloading.ZLoadingDialog;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,18 +85,31 @@ public class AddLostActivity extends BaseActivity{
         addPictureGrid.setAdapter(addPictureAdapter);
 
         //设置Gridview点击事件
-        addPictureGrid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapterView,View view,int position,long id){
-                Matisse.from(AddLostActivity.this)
-                        .choose(MimeType.allOf())
-                        .countable(true)//true:选中后显示数字;false:选中后显示对号
-                        .maxSelectable(9)//可选的最大数
-                        .capture(false)//选择照片时，是否显示拍照
-                        .imageEngine(new GlideEngine())//图片加载引擎
-                        .forResult(1);
-            }
-        });
+        addPictureGrid.setOnItemClickListener((adapterView, view, position, id) -> XXPermissions.with(AddLostActivity.this)
+            //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+            .permission(Permission.Group.STORAGE)
+            .permission(Permission.CAMERA)
+            .request(new OnPermission() {
+                @Override
+                public void hasPermission(List<String> granted, boolean isAll) {
+                    if (isAll){
+                        Matisse.from(AddLostActivity.this)
+                            .choose(MimeType.allOf())
+                            .countable(true)//true:选中后显示数字;false:选中后显示对号
+                            .maxSelectable(9)//可选的最大数
+                            .capture(false)//选择照片时，是否显示拍照
+                            .imageEngine(new GlideEngine())//图片加载引擎
+                            .forResult(1);
+                    }else{
+                        XXPermissions.gotoPermissionSettings(AddLostActivity.this);
+                    }
+                }
+                @Override
+                public void noPermission(List<String> denied, boolean quick) {
+                    Toast.makeText(AddLostActivity.this,"没有权限无法添加图片,请在设置内授予权限..",Toast.LENGTH_SHORT).show();
+                    XXPermissions.gotoPermissionSettings(AddLostActivity.this);
+                }
+            }));
 
         //先让按钮失效
         addButton.setEnabled(false);
