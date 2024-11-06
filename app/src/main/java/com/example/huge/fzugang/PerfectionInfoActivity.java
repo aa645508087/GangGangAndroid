@@ -35,7 +35,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -182,19 +184,33 @@ public class PerfectionInfoActivity extends BaseActivity{
         }
 
         //上传头像监听
-        perfectionAvatar.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Matisse.from(PerfectionInfoActivity.this)
-                        .choose(MimeType.of(MimeType.JPEG,MimeType.PNG))
-                        .countable(false)//true:选中后显示数字;false:选中后显示对号
-                        .maxSelectable(1)//可选的最大数
-                        .capture(true)//选择照片时，是否显示拍照
-                        .captureStrategy(new CaptureStrategy(true,"PhotoPicker"))//参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
-                        .imageEngine(new GlideEngine())//图片加载引擎
-                        .forResult(1);
-            }
-        });
+        perfectionAvatar.setOnClickListener(v -> XXPermissions.with(PerfectionInfoActivity.this)
+            //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+            .permission(Permission.Group.STORAGE)
+            .permission(Permission.CAMERA)
+            .request(new OnPermission() {
+                @Override
+                public void hasPermission(List<String> granted, boolean isAll) {
+                    if (isAll){
+                        Matisse.from(PerfectionInfoActivity.this)
+                            .choose(MimeType.of(MimeType.JPEG,MimeType.PNG))
+                            .countable(false)//true:选中后显示数字;false:选中后显示对号
+                            .maxSelectable(1)//可选的最大数
+                            .capture(true)//选择照片时，是否显示拍照
+                            .captureStrategy(new CaptureStrategy(true,"PhotoPicker"))//参数1 true表示拍照存储在共有目录，false表示存储在私有目录；参数2与 AndroidManifest中authorities值相同，用于适配7.0系统 必须设置
+                            .imageEngine(new GlideEngine())//图片加载引擎
+                            .forResult(1);
+                    }else{
+                        XXPermissions.gotoPermissionSettings(PerfectionInfoActivity.this);
+                    }
+                }
+
+                @Override
+                public void noPermission(List<String> denied, boolean quick) {
+                    Toast.makeText(PerfectionInfoActivity.this,"没有权限无法更换头像,请在设置内授予权限..",Toast.LENGTH_SHORT).show();
+                    XXPermissions.gotoPermissionSettings(PerfectionInfoActivity.this);
+                }
+            }));
         //设置用户名改变监听
         perfectionUsernameEdit.getEditText().addTextChangedListener(new TextWatcher(){
             @Override
