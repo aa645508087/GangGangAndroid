@@ -76,4 +76,6 @@ dependencies {
 
     //时间、日期选择器
     implementation 'com.contrarywind:Android-PickerView:4.1.8'
+    // 权限申请框架
+    implementation 'com.hjq:xxpermissions:5.2'
 }
