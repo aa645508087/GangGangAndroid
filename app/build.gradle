@@ -57,7 +57,7 @@ dependencies {
     implementation 'com.youth.banner:banner:1.4.10'
     //Glide图片加载器
     implementation 'com.github.bumptech.glide:glide:3.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
     //图片全屏查看
     implementation 'com.github.SherlockGougou:BigImageViewPager:v3_4.0.2'
     //图片选择器Matisse
